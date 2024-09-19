@@ -1,5 +1,5 @@
 export type Crypto = {
-  id: string;
+  nameid: string;
   name: string;
   price_usd: string;
   symbol: string;

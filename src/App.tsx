@@ -6,6 +6,7 @@ import { Crypto } from "./Types";
 
 function App() {
   const [cryptos, setCryptos] = useState<Crypto[] | null>(null);
+  const [selected, setSelected] = useState<Crypto | null>();
   useEffect(() => {
     const url = "https://api.coinlore.net/api/tickers/";
     axios(url).then((response) => {
@@ -13,13 +14,29 @@ function App() {
     });
   }, []);
   return (
-    <div className="App">
-      {cryptos
-        ? cryptos.map((crypto) => {
-            return <CryptoSummary crypto={crypto} />;
-          })
-        : null}
-    </div>
+    <>
+      <div className="App">
+        <select
+          onChange={(e) => {
+            const c = cryptos?.find((x) => x.nameid === e.target.value);
+            setSelected(c);
+          }}
+          defaultValue="default"
+        >
+          <option value="default">Choose an option</option>
+          {cryptos
+            ? cryptos.map((crypto) => {
+                return (
+                  <option key={crypto.nameid} value={crypto.nameid}>
+                    {crypto.name}
+                  </option>
+                );
+              })
+            : null}
+        </select>
+      </div>
+      {selected ? <CryptoSummary crypto={selected} /> : null}
+    </>
   );
 }
 
