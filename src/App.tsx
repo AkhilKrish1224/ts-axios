@@ -29,8 +29,9 @@ ChartJS.register(
 
 function App() {
   const [cryptos, setCryptos] = useState<Crypto[] | null>(null);
-  const [selected, setSelected] = useState<Crypto | null>();
+  const [selected, setSelected] = useState<Crypto[]>([]);
   const [range, setRange] = useState<number>(30);
+  /*
   const [data, setData] = useState<ChartData<"line">>();
   const [options, setOptions] = useState<ChartOptions<"line">>({
     responsive: true,
@@ -44,7 +45,7 @@ function App() {
       },
     },
   });
-
+*/
   useEffect(() => {
     const url =
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false";
@@ -53,6 +54,7 @@ function App() {
     });
   }, []);
 
+  /*
   useEffect(() => {
     if (!selected) return;
     axios
@@ -99,14 +101,15 @@ function App() {
       },
     });
   }, [selected, range]);
+  */
 
   return (
     <>
       <div className="App">
         <select
           onChange={(e) => {
-            const c = cryptos?.find((x) => x.id === e.target.value);
-            setSelected(c);
+            const c = cryptos?.find((x) => x.id === e.target.value) as Crypto;
+            setSelected([...selected, c]);
           }}
           defaultValue="default"
         >
@@ -121,22 +124,19 @@ function App() {
               })
             : null}
         </select>
-        <select
-          onChange={(e) => {
-            setRange(parseInt(e.target.value));
-          }}
-        >
-          <option value={30}>30 Days</option>
-          <option value={7}>7 Days</option>
-          <option value={1}>1 Day</option>
-        </select>
       </div>
-      {selected ? <CryptoSummary crypto={selected} /> : null}
-      {data ? (
+
+      {selected.map((s) => {
+        return <CryptoSummary crypto={s} />;
+      })}
+
+      {/*selected ? <CryptoSummary crypto={selected} /> : null*/}
+
+      {/*data ? (
         <div style={{ width: 600 }}>
           <Line options={options} data={data} />
         </div>
-      ) : null}
+      ) : null*/}
     </>
   );
 }
