@@ -13,40 +13,19 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 import type { ChartData, ChartOptions } from "chart.js";
 import moment from "moment";
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 function App() {
   const [cryptos, setCryptos] = useState<Crypto[] | null>(null);
   const [selected, setSelected] = useState<Crypto[]>([]);
-  /*
-  const [range, setRange] = useState<number>(30);
-  
-  const [data, setData] = useState<ChartData<"line">>();
-  const [options, setOptions] = useState<ChartOptions<"line">>({
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
-        display: true,
-        text: "Chart.js Line Chart",
-      },
-    },
-  });
-*/
+
+  const [data, setData] = useState<ChartData<"pie">>();
+
   useEffect(() => {
     const url =
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false";
@@ -106,6 +85,33 @@ function App() {
 
   useEffect(() => {
     console.log("Selected: ", selected);
+    if (selected.length === 0) return;
+    setData({
+      labels: selected.map((s) => s.name),
+      datasets: [
+        {
+          label: "# of Votes",
+          data: selected.map((s) => s.owned * s.current_price),
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.2)",
+            "rgba(54, 162, 235, 0.2)",
+            "rgba(255, 206, 86, 0.2)",
+            "rgba(75, 192, 192, 0.2)",
+            "rgba(153, 102, 255, 0.2)",
+            "rgba(255, 159, 64, 0.2)",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 1)",
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(153, 102, 255, 1)",
+            "rgba(255, 159, 64, 1)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    });
   }, [selected]);
 
   function updateOwned(crypto: Crypto, amount: number): void {
@@ -147,11 +153,11 @@ function App() {
 
       {/*selected ? <CryptoSummary crypto={selected} /> : null*/}
 
-      {/*data ? (
+      {data ? (
         <div style={{ width: 600 }}>
-          <Line options={options} data={data} />
+          <Pie data={data} />
         </div>
-      ) : null*/}
+      ) : null}
 
       {selected
         ? "Your Protfolio is worth : $" +
